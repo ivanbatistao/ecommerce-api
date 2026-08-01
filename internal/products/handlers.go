@@ -1,7 +1,6 @@
 package products
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/ivanbatistao/ecommerce-api/internal/json"
