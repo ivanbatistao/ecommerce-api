@@ -1,6 +1,7 @@
 package products
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/ivanbatistao/ecommerce-api/internal/json"
@@ -17,8 +18,13 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	// 1. Call the service -> ListProducts
-	// 2. Return JSON in an HTTP response
+	error := h.service.ListProducts(r.Context()) // products result is missing from ListProducts
+
+	if error != nil {
+		log.Println(error)
+		http.Error(w, error.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	products := struct {
 		Products []string `json:"products"`
