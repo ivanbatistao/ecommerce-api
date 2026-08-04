@@ -7,7 +7,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	repo "github.com/ivanbatistao/ecommerce-api/internal/adapters/postgresql/sqlc"
 	"github.com/ivanbatistao/ecommerce-api/internal/products"
+	"github.com/jackc/pgx/v5"
 )
 
 // mount
@@ -26,9 +28,11 @@ func (app *Application) mount() http.Handler {
 		w.Write([]byte(""))
 	})
 
-	productService := products.NewService()
+	productService := products.NewService(repo.New(app.db))
 	productsHandler := products.NewHandler(productService)
+
 	r.Get("/products", productsHandler.ListProducts)
+	r.Get("/products/{id}", productsHandler.FindProductById)
 
 	return r
 }
@@ -51,7 +55,7 @@ func (app *Application) run(h http.Handler) error {
 type Application struct {
 	config Config
 	// logger
-	// db driver
+	db *pgx.Conn
 }
 
 type Config struct {
